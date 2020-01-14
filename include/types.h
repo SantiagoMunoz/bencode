@@ -3,15 +3,17 @@
 
 #include<memory>
 #include<string>
+#include<vector>
+#include<map>
 
 class tItem: public std::enable_shared_from_this<tItem>
 {
 public:
-	virtual ~tItem() = 0;
+    virtual ~tItem() = default;
 
     template<typename T>
     std::shared_ptr<T> as() {
-        static_assert(std::is_base_of<tItem, T>::value);
+        static_assert(std::is_base_of<tItem, T>::value,"Not valid ype");
         return std::dynamic_pointer_cast<T>(shared_from_this());
     }
 
@@ -38,5 +40,19 @@ public:
     std::string str;
 };
 
+class tList: public tItem
+{
+public:
+    tList() = default;
 
+    std::vector<std::string> data;
+};
+
+class tDict: public tItem
+{
+public:
+    tDict() = default;
+
+    std::map<std::string, std::string> data;
+};
 #endif // __TYPES_H_
