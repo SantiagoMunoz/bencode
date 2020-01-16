@@ -45,7 +45,7 @@ class tList: public tItem
 public:
     tList() = default;
 
-    std::vector<std::string> data;
+    std::vector<std::shared_ptr<tItem>> data;
 };
 
 class tDict: public tItem
@@ -53,6 +53,6 @@ class tDict: public tItem
 public:
     tDict() = default;
 
-    std::map<std::string, std::string> data;
+    std::map<std::string, std::shared_ptr<tItem>> data;
 };
 #endif // __TYPES_H_

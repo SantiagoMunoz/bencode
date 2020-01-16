@@ -42,19 +42,19 @@ namespace Metadata {
 
     class TorrentDecoder {
         public:
-        std::unique_ptr<tItem> decode(std::istream& input);
-        std::unique_ptr<tItem> decode(std::string& input);
+        std::unique_ptr<tItem> decode(std::istream& input) const;
+        std::unique_ptr<tItem> decode(std::string& input) const;
         static std::unique_ptr<TorrentDecoder> create();
 
         protected:
         TorrentDecoder() = default;
 
         private:
-        int decode_int(std::istream& input) const;
-        std::string decode_string(std::istream& input) const;
-        std::map<std::string, std::string> decode_dictionary(std::istream& input) const;
-        std::vector<std::unique_ptr<tItem>> decode_list(std::istream& input) const;
-        std::map<std::string, std::string> decode_dict(std::istream& input) const;
+        std::unique_ptr<tItem> decode_int(std::istream& input) const;
+        std::unique_ptr<tItem> decode_string(std::istream& input) const;
+        std::unique_ptr<tItem> decode_dictionary(std::istream& input) const;
+        std::unique_ptr<tItem> decode_list(std::istream& input) const;
+        std::unique_ptr<tItem> decode_dict(std::istream& input) const;
     };
 
     std::unique_ptr<TorrentMetaData> decode_torrent(std::istream& input);

@@ -19,17 +19,17 @@ std::unique_ptr<TorrentMetaData> decode_torrent(std::string& input)
 
 }
 
-std::unique_ptr<tItem> TorrentDecoder::decode(std::istream &input)
+std::unique_ptr<tItem> TorrentDecoder::decode(std::istream &input) const
 {
     switch(input.peek()) {
         case 'd':
-//            return std::make_unique<tDict>(decode_dict(input));
+            return decode_dictionary(input);
             break;
         case 'i':
-            return std::make_unique<tInt>(decode_int(input));
+            return decode_int(input);
             break;
         case 'l':
-//            return std::make_unique<tList>(decode_list(input));
+            return decode_list(input);
             break;
         case '1':
         case '2':
@@ -41,11 +41,9 @@ std::unique_ptr<tItem> TorrentDecoder::decode(std::istream &input)
         case '8':
         case '9':
         case '0':
-            auto s = decode_string(input);
-            return std::make_unique<tString>(s);
+            return decode_string(input);
             break;
     }
-
 }
 
 std::unique_ptr<tItem> decode(std::string& input)
@@ -55,7 +53,7 @@ std::unique_ptr<tItem> decode(std::string& input)
 
 }
 
-int TorrentDecoder::decode_int(std::istream& input) const
+std::unique_ptr<tItem> TorrentDecoder::decode_int(std::istream& input) const
 {
     int res = 0;
     int digit;
@@ -71,10 +69,10 @@ int TorrentDecoder::decode_int(std::istream& input) const
             res += digit - '0';
         }
     }
-    return res;
+    return std::make_unique<tInt>(res);
 }
 
-std::string TorrentDecoder::decode_string(std::istream& input) const
+std::unique_ptr<tItem> TorrentDecoder::decode_string(std::istream& input) const
 {
     int digit;
     int len = 0;
@@ -93,29 +91,28 @@ std::string TorrentDecoder::decode_string(std::istream& input) const
     for(int i=0; i< len; i++ )
         result.push_back(static_cast<char>(input.get()));
 
-    return result;
+    return std::make_unique<tString>(result);
 }
 
-std::map<std::string, std::string> TorrentDecoder::decode_dictionary(std::istream& input) const
+std::unique_ptr<tItem> TorrentDecoder::decode_dictionary(std::istream& input) const
 {
 
 
 }
 
-std::vector<std::unique_ptr<tItem>> TorrentDecoder::decode_list(std::istream& input) const
+std::unique_ptr<tItem> TorrentDecoder::decode_list(std::istream& input) const
 {
-//    std::vector<std::unique_ptr<tItem>> res;
-//    int digit;
-//
-//    digit = input.get();
-//    //TODO Check digit == 'l'
-//
-//    while (input.peek() != 'e') {
-//        auto res = decode(input);
-//        res.push_back(res);
-//    }
-//    input.get(); //Flush final e
-//    return res;
+    auto res = std::make_unique<tList>();
+    int digit;
+
+    digit = input.get();
+    //TODO Check digit == 'l'
+
+    while (input.peek() != 'e') {
+        res->data.push_back(decode(input));
+    }
+    input.get(); //Flush final e
+    return res;
 }
 
 //Constructor from input stream
