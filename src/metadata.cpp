@@ -23,7 +23,7 @@ std::unique_ptr<tItem> TorrentDecoder::decode(std::istream &input) const
 {
     switch(input.peek()) {
         case 'd':
-            return decode_dictionary(input);
+            return decode_dict(input);
             break;
         case 'i':
             return decode_int(input);
@@ -94,16 +94,26 @@ std::unique_ptr<tItem> TorrentDecoder::decode_string(std::istream& input) const
     return std::make_unique<tString>(result);
 }
 
-std::unique_ptr<tItem> TorrentDecoder::decode_dictionary(std::istream& input) const
+std::unique_ptr<tItem> TorrentDecoder::decode_dict(std::istream& input) const
 {
+    int digit;
+    auto res = std::make_unique<tDict>();
 
+    digit = input.get();
 
+    while(input.peek() != 'e') {
+        auto key = std::shared_ptr<tItem>(decode(input));
+        auto value = std::shared_ptr<tItem>(decode(input));
+        res->data[key->as<tString>()->str] = value;
+    }
+
+    return res;
 }
 
 std::unique_ptr<tItem> TorrentDecoder::decode_list(std::istream& input) const
 {
-    auto res = std::make_unique<tList>();
     int digit;
+    auto res = std::make_unique<tList>();
 
     digit = input.get();
     //TODO Check digit == 'l'
